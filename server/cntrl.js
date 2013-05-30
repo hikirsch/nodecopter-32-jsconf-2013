@@ -137,7 +137,7 @@ function go(client, meters, cb) {
 var watchedTurn, watchedBattery, watchedUp;
 
 function getTurn() {
-	return lastTurn;
+	return watchedTurn;
 }
 
 function getBattery() {
