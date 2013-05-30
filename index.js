@@ -34,5 +34,8 @@ client.takeoff(function() {
 	cntrl.turn(client, 50.0);
 	setTimeout(function() {
 		cntrl.turn(client, -70.0);
+	}, 5000);
+	setTimeout(function() {
+		cntrl.turn(client, 90.0);
 	}, 10000);
 });
