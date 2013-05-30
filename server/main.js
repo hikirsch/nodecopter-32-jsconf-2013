@@ -3,7 +3,6 @@ var app = {};
 var arDrone = require( 'ar-drone' );
 var io = require( 'socket.io' ).listen( 8888 );
 var http = require( "http" );
-var drone = require( "dronestream" );
 var cntrl = require( './cntrl' );
 var fs = require('fs');
 
