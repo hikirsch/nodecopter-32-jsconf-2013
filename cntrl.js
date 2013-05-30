@@ -5,28 +5,39 @@ function smoothSpeed(should, is) { // calculates the speed based on the diff of 
 }
 
 function adjustHeightIfNeeded(client, should, is) {
-	if (is < should) {
+	if (is < should && Math.abs(is-should) > 0.05) {
 		// go up a little
 		client.up(smoothSpeed(should, is));
-	} else if (is > should) {
+	} else if (is > should && Math.abs(is-should) > 0.05) {
 		// go down a little
 		client.down(smoothSpeed(should, is));
 	} else {
 		// stop moving up or down
 		client.up(0);
 		client.down(0);
+		return true;
 	}
+	return false;
 }
 
 var upCallback;
-function up(client, meters) {
+/**
+ * @param clint Client
+ * @params meters (should be > 0.3 otherwise stop controlling it)
+ * @param cb Callback if we finished uping (optional)
+ **/
+function up(client, meters, cb) {
 	if (upCallback) {
 		client.removeListener("navdata", upCallback);
 	}
-	if (meters > 0) {
+	if (meters > 0.3) {
 		upCallback = function(navdata) {
 			// console.log(" we are on " + navdata.demo.altitudeMeters + " meters");
-			adjustHeightIfNeeded(client, meters, navdata.demo.altitudeMeters);
+			var reached = adjustHeightIfNeeded(client, meters, navdata.demo.altitudeMeters);
+			if (reached === true && cb) {
+				cb();
+				cb = undefined;
+			}
 		};
 		console.log("should be up " + meters + " meters");
 		client.on("navdata", upCallback);
@@ -44,28 +55,39 @@ function smoothTurn(should, is) { // calculates the speed based on the diff of s
 }
 
 function adjustTurnIfNeeded(client, should, is) {
-	if (is < should) {
+	if (is < should && Math.abs(is-should) > 1.0) {
 		// turn right a little
 		client.clockwise(smoothTurn(should, is));
-	} else if (is > should) {
+	} else if (is > should && Math.abs(is-should) > 1.0) {
 		// turn left a little
 		client.counterClockwise(smoothTurn(should, is));
 	} else {
 		// stop turning left or right
 		client.clockwise(0);
 		client.counterClockwise(0);
+		return true;
 	}
+	return false;
 }
 
 var turnCallback;
-function turn(client, degrees) {
+/**
+ * @param clint Client
+ * @params degrees (should be between -180 and 180 otherwise stop controlling it)
+ * @param cb Callback if we finished turning (optional)
+ **/
+function turn(client, degrees, cb) {
 	if (turnCallback) {
 		client.removeListener("navdata", turnCallback);
 	}
 	if (degrees >= -180 && degrees <= 180) {
 		turnCallback = function(navdata) {
 			// console.log(" we are at " + navdata.demo.clockwiseDegrees + " degrees");
-			adjustTurnIfNeeded(client, degrees, navdata.demo.clockwiseDegrees);
+			var reached = adjustTurnIfNeeded(client, degrees, navdata.demo.clockwiseDegrees);
+			if (reached === true && cb) {
+				cb();
+				cb = undefined;
+			}
 		};
 		console.log("should be turn " + degrees + " degrees");
 		client.on("navdata", turnCallback);
@@ -76,6 +98,9 @@ function turn(client, degrees) {
 	}
 }
 
+/**
+ * @param client Client
+ **/
 function emergency(client) {
 	client.removeAllListeners("navdata");
 	client.stop();
@@ -85,6 +110,28 @@ function emergency(client) {
 	});
 }
 
+/**
+ * @param client Client
+ * @param meters Go meters forward (or backward if negative)
+ * @param cb Callback if we finished going (optional)
+ **/
+function go(client, meters, cb) {
+	if (meters > 0) {
+		client.front(0.5);
+	} else {
+		client.back(0.5);
+	}
+	setTimeout(function() {
+		client.front(0);
+		client.back(0);
+		if (cb) {
+			cb();
+			cb = undefined;
+		}
+	}, 750);
+}
+
 exports.turn = turn;
 exports.up = up;
+exports.go = go;
 exports.emergency = emergency;
