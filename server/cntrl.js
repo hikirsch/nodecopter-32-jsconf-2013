@@ -6,10 +6,10 @@ function smoothSpeed(should, is) { // calculates the speed based on the diff of 
 
 function adjustHeightIfNeeded(client, should, is) {
 	if (is < should) {
-		console.log("go up a little");
+//		console.log("go up a little");
 		client.up(smoothSpeed(should, is));
 	} else if (is > should) {
-		console.log("go down a little");
+//		console.log("go down a little");
 		client.down(smoothSpeed(should, is));
 	} else {
 		// stop moving up or down

@@ -1,6 +1,6 @@
 var arDrone = require("ar-drone");
 var client  = arDrone.createClient();
-var cntrl = require("./cntrl");
+var cntrl = require("server/cntrl");
 
 var kill = false;
 process.on("SIGINT", function() {

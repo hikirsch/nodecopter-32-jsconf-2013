@@ -14,9 +14,13 @@ app.startListening = function() {
 		app.log( "STATUS: " + data.message, true );
 	} );
 
-	app.socket.on( 'picture-response', function( data ) {
+	app.socket.on( 'picture-response', function() {
 		console.log( "onImageData" );
-		console.log( data );
+		app.refreshCamera();
+	} );
+
+	app.socket.on( 'battery-update', function( data ) {
+		$( "#battery-percentage" ).html( data.batteryStatus );
 	} );
 };
 
@@ -25,12 +29,6 @@ app.refreshCamera = function() {
 	$( "#cameraWrapper" )
 		.empty()
 		.append( image );
-
-	console.log("refreshing camera");
-
-	setTimeout( function() {
-		app.refreshCamera();
-	}, 2000 );
 };
 
 app.initEvents = function() {
@@ -38,6 +36,18 @@ app.initEvents = function() {
 	$( "#app-land" ).on( 'click', app.land );
 	$( "#app-flip" ).on( 'click', app.flip );
 	$( "#app-picture" ).on( 'click', app.picture );
+	$( "#app-up" ).on( 'click', app.up );
+	$( "#app-down" ).on( 'click', app.down );
+};
+
+app.up = function() {
+	app.log( "Going Up" );
+	app.socket.emit( 'copter-action', { command: "up" } );
+};
+
+app.down = function() {
+	app.log( "Going Down" );
+	app.socket.emit( 'copter-action', { command: "down" } );
 };
 
 app.flip = function() {

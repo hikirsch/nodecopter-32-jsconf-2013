@@ -4,10 +4,12 @@ var arDrone = require( 'ar-drone' );
 var io = require( 'socket.io' ).listen( 8888 );
 var http = require( "http" );
 var drone = require( "dronestream" );
+var cntrl = require( './cntrl' );
 
 app.kill = false;
 app.showedWarning = false;
 app.lastImage = null;
+app.lastBattery = null;
 
 app.init = function() {
 	app.createDrone();
@@ -57,7 +59,7 @@ app.initWebSocket = function() {
 
 app.createDrone = function() {
 	app.client = arDrone.createClient( {
-		timeout: 10
+		timeout: 10 * 1000
 	} );
 
 	app.client.config( 'video:video_channel', 3 );
@@ -71,6 +73,14 @@ app.createDrone = function() {
 			console.log( "BATTERY LEVEL AT: " + data.demo.batteryPercentage );
 		}
 
+		if( app.socket && app.lastBattery != data.demo.batteryPercentage ) {
+			app.socket.emit( 'battery-update', {
+				batteryStatus: data.demo.batteryPercentage
+			} );
+
+			app.lastBattery = data.demo.batteryPercentage;
+		}
+
 		app.showedWarning = true;
 	} );
 
@@ -82,6 +92,7 @@ app.createDrone = function() {
 
 	stream.on( 'data', function( data ) {
 		app.lastImage = data;
+		app.socket.emit( 'picture-response' );
 	} );
 
 	app.log( "drone created" );
@@ -99,6 +110,14 @@ app.createDrone = function() {
 app.commands = {
 	"takeoff": function() {
 		app.client.takeoff();
+	},
+
+	"up": function() {
+		cntrl.up( app.client, 2 );
+	},
+
+	"down": function() {
+		cntrl.up( app.client, 1 );
 	},
 
 	"land": function() {
@@ -134,10 +153,6 @@ app.initSocketEvents = function( socket ) {
 	socket.on( 'my other event', function( data ) {
 		console.log( data );
 	} );
-
-};
-
-app.sendImageToClient = function( imageData ) {
 
 };
 
