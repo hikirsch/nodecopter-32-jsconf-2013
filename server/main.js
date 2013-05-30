@@ -124,7 +124,7 @@ app.createDrone = function() {
 
                 console.log(angle, centroidX, controlInput[0], controlInput[1]);
 
-                cntrl.turn(app.client, cntrl.getTurn() + (-controlInput[0] * 180 / Math.PI), function() {
+                cntrl.turn(app.client, cntrl.getTurn() + (controlInput[0] * 180 / Math.PI), function() {
                     cntrl.go(app.client, controlInput[1]);
                 });
             });
