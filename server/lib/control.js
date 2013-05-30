@@ -7,7 +7,7 @@ function controls(angle, centroidX) {
   controlAngle = controlAngle + direction * (Math.PI / 6 * (centroidX - 0.5) * (centroidX - 0.5));
   speed = 0.1 + 0.9 * Math.pow(Math.E, -controlAngle);
 
-  return [-controlAngle / Math.PI * 180, speed];
+  return [controlAngle / Math.PI * 180, speed];
 }
 
 module.exports = controls;
