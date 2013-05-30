@@ -1,7 +1,6 @@
 var fs = require('fs'),
     path = require('path'),
     cv = require('opencv'),
-    Canvas = require('canvas'),
     geom = require('./geom'),
     control = require('./control');
 
@@ -43,7 +42,7 @@ function main() {
 }
 
 
-function detect() {
+function detect(callback) {
   cv.readImage('image.png', function(err, im) {
     if (err) {
       console.error(err);
@@ -54,7 +53,8 @@ function detect() {
         centroid = getCentroid(lines),
         centroidX = centroid[0] / im.width();
 
-    return [angle, centroidX];
+    callback(angle, centroidX);
+  });
 }
 
 
