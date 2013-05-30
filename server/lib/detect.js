@@ -2,7 +2,8 @@ var fs = require('fs'),
     path = require('path'),
     cv = require('opencv'),
     Canvas = require('canvas'),
-    geom = require('./geom');
+    geom = require('./geom'),
+    control = require('./control');
 
 function main() {
   var indir = process.argv[2] || 'line-challenge',
@@ -40,6 +41,22 @@ function main() {
     });
   });
 }
+
+
+function detect() {
+  cv.readImage('image.png', function(err, im) {
+    if (err) {
+      console.error(err);
+    }
+
+    var lines = findLines(im),
+        angle = getAngle(lines),
+        centroid = getCentroid(lines),
+        centroidX = centroid[0] / im.width();
+
+    return [angle, centroidX];
+}
+
 
 function findLines(im) {
   global.im = im;
@@ -181,4 +198,5 @@ function saveImage(ctx, name) {
   });
 }
 
-module.exports = main;
+module.exports = detect;
+
