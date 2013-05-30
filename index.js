@@ -29,13 +29,19 @@ client.on("navdata", function(navdata) {
 
 console.log("I am taking off now");
 client.takeoff(function() {
-	console.log("action happens now :)");
-	cntrl.up(client, 1.0);
-	cntrl.turn(client, 50.0);
+	console.log("calibration happens now...")
+	client.calibrate(0);
 	setTimeout(function() {
-		cntrl.turn(client, -70.0);
+		console.log("action happens now :)");
+		cntrl.up(client, 1.0);
+		cntrl.turn(client, 50.0);
+		setTimeout(function() {
+			cntrl.up(client, 0.8);
+			cntrl.turn(client, -70.0);
+		}, 5000);
+		setTimeout(function() {
+			cntrl.up(client, 0.6);
+			cntrl.turn(client, 90.0);
+		}, 10000);
 	}, 5000);
-	setTimeout(function() {
-		cntrl.turn(client, 90.0);
-	}, 10000);
 });

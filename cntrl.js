@@ -6,10 +6,10 @@ function smoothSpeed(should, is) { // calculates the speed based on the diff of 
 
 function adjustHeightIfNeeded(client, should, is) {
 	if (is < should) {
-		console.log("go up a little");
+		// go up a little
 		client.up(smoothSpeed(should, is));
 	} else if (is > should) {
-		console.log("go down a little");
+		// go down a little
 		client.down(smoothSpeed(should, is));
 	} else {
 		// stop moving up or down
@@ -25,7 +25,7 @@ function up(client, meters) {
 	}
 	if (meters > 0) {
 		upCallback = function(navdata) {
-			// TODO console.log(" we are on " + navdata.demo.altitudeMeters + " meters");
+			// console.log(" we are on " + navdata.demo.altitudeMeters + " meters");
 			adjustHeightIfNeeded(client, meters, navdata.demo.altitudeMeters);
 		};
 		console.log("should be up " + meters + " meters");
@@ -45,10 +45,10 @@ function smoothTurn(should, is) { // calculates the speed based on the diff of s
 
 function adjustTurnIfNeeded(client, should, is) {
 	if (is < should) {
-		console.log("turn right a little");
+		// turn right a little
 		client.clockwise(smoothTurn(should, is));
 	} else if (is > should) {
-		console.log("turn left a little");
+		// turn left a little
 		client.counterClockwise(smoothTurn(should, is));
 	} else {
 		// stop turning left or right
@@ -64,7 +64,7 @@ function turn(client, degrees) {
 	}
 	if (degrees >= -180 && degrees <= 180) {
 		turnCallback = function(navdata) {
-			console.log(" we are at " + navdata.demo.clockwiseDegrees + " degrees");
+			// console.log(" we are at " + navdata.demo.clockwiseDegrees + " degrees");
 			adjustTurnIfNeeded(client, degrees, navdata.demo.clockwiseDegrees);
 		};
 		console.log("should be turn " + degrees + " degrees");
