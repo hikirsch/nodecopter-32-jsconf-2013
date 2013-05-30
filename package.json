@@ -1,0 +1,25 @@
+{
+  "name": "nodecopter-32-jsconf-2013",
+  "version": "0.0.1",
+  "description": "Nodecopter #32 - JSconf 2013",
+  "main": "server/index.js",
+  "dependencies": {
+    "ar-drone": "~0.1.0",
+    "socket.io": "~0.9.14"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hikirsch/nodecopter-32-jsconf-2013.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "323c011ddad66015ad800f20a6717a60a2643227",
+  "bugs": {
+    "url": "https://github.com/hikirsch/nodecopter-32-jsconf-2013/issues"
+  }
+}

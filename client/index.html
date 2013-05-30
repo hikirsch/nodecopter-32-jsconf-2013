@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Nodecopter #32 - JSConf 2013</title>
+		<script src="js/jquery.1.10.min.js"></script>
+		<script src="../node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script>
+		<script src="../node_modules/dronestream/dist/nodecopter-client.js"></script>
+	</head>
+
+	<body>
+		<input type="button" id="app-takeoff" value="Takeoff" />
+		<input type="button" id="app-land" value="Land" />
+		<input type="button" id="app-flip" value="Flip" />
+		<input type="button" id="app-picture" value="Picture" />
+		<input type="button" id="app-emergencyLanding" value="Emergency Landing" />
+
+		<p id="debug"></p>
+
+		<div id="cameraWrapper"></div>
+
+		<script src="js/app.js"></script>
+	</body>
+</html>
