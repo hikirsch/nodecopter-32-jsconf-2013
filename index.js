@@ -13,7 +13,7 @@ process.on("SIGINT", function() {
 	}
 });
 process.on("uncaughtException", function(err) {
-	console.log("Caught exception: " + err, err);
+	console.error("Caught exception: " + err, err.stack);
 	cntrl.emergency(client);
 });
 
@@ -28,11 +28,14 @@ client.on("navdata", function(navdata) {
 	}
 });
 
+cntrl.watch(client);
+
 console.log("I am taking off now");
 client.takeoff(function() {
 	console.log("calibration happens now...")
 	//client.calibrate(0);
 	//setTimeout(function() {
+		console.log("height: " + cntrl.getUp());
 		console.log("action happens now :)");
 		cntrl.go(client, 2.0, function() {
 			cntrl.emergency(client);

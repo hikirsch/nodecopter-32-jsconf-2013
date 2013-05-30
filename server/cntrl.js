@@ -34,9 +34,9 @@ function up(client, meters, cb) {
 		upCallback = function(navdata) {
 			// console.log(" we are on " + navdata.demo.altitudeMeters + " meters");
 			var reached = adjustHeightIfNeeded(client, meters, navdata.demo.altitudeMeters);
-			if (reached === true && cb) {
+			if (reached === true && cb && cb.fired !== true) {
 				cb();
-				cb = undefined;
+				cb.fired = true;
 			}
 		};
 		console.log("should be up " + meters + " meters");
@@ -84,9 +84,9 @@ function turn(client, degrees, cb) {
 		turnCallback = function(navdata) {
 			// console.log(" we are at " + navdata.demo.clockwiseDegrees + " degrees");
 			var reached = adjustTurnIfNeeded(client, degrees, navdata.demo.clockwiseDegrees);
-			if (reached === true && cb) {
+			if (reached === true && cb && cb.fired !== true) {
 				cb();
-				cb = undefined;
+				cb.fired = true;
 			}
 		};
 		console.log("should be turn " + degrees + " degrees");
@@ -125,16 +125,52 @@ function go(client, meters, cb) {
 	setTimeout(function() {
 		client.front(0);
 		client.back(0);
-		if (cb) {
+		if (cb && cb.fired !== true) {
 			setTimeout(function() {
 				cb();
 			}, 1000);
-			cb = undefined;
+			cb.fired = true;
 		}
 	}, goTime);
 }
 
+var watchedTurn, watchedBattery, watchedUp;
+
+function getTurn() {
+	return lastTurn;
+}
+
+function getBattery() {
+	return watchedBattery;
+}
+
+function getUp() {
+	return watchedUp;
+}
+
+function watch(client) {
+	client.on("navdata", function(navdata) {
+		if (navdata.demo) {
+			watchedTurn = navdata.demo.clockwiseDegrees;
+			watchedBattery = navdata.demo.batteryPercentage;
+			watchedUp = navdata.demo.altitudeMeters;
+			if (watchedBattery < 10) {
+				console.log("I am running out of battery!");
+				emergency(client);
+			}
+		} else {
+			watchedTurn = undefined;
+			watchedBattery = undefined;
+			watchedUp = undefined;
+		}
+	});
+}
+
+exports.watch = watch;
 exports.turn = turn;
 exports.up = up;
 exports.go = go;
 exports.emergency = emergency;
+exports.getTurn = getTurn;
+exports.getBattery = getBattery;
+exports.getUp = getUp;
