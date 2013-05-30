@@ -116,6 +116,7 @@ function emergency(client) {
  * @param cb Callback if we finished going (optional)
  **/
 function go(client, meters, cb) {
+	var goTime = Math.abs(meters) * 500;
 	if (meters > 0) {
 		client.front(0.5);
 	} else {
@@ -125,10 +126,12 @@ function go(client, meters, cb) {
 		client.front(0);
 		client.back(0);
 		if (cb) {
-			cb();
+			setTimeout(function() {
+				cb();
+			}, 1000);
 			cb = undefined;
 		}
-	}, 750);
+	}, goTime);
 }
 
 exports.turn = turn;

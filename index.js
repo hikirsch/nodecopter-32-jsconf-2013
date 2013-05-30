@@ -1,6 +1,6 @@
 var arDrone = require("ar-drone");
 var client  = arDrone.createClient();
-var cntrl = require("server/cntrl");
+var cntrl = require("./server/cntrl");
 
 var kill = false;
 process.on("SIGINT", function() {
@@ -34,7 +34,7 @@ client.takeoff(function() {
 	//client.calibrate(0);
 	//setTimeout(function() {
 		console.log("action happens now :)");
-		cntrl.go(client, 0.5, function() {
+		cntrl.go(client, 2.0, function() {
 			cntrl.emergency(client);
 		});
 	//}, 5000);
