@@ -69,6 +69,8 @@ app.createDrone = function() {
 		timeout: 1000
 	} );
 
+    cntrl.watch(app.client);
+
 	app.client.config( 'video:video_channel', 3 );
 
 	app.client.on( 'navdata', function( data ) {
@@ -121,6 +123,10 @@ app.createDrone = function() {
 			    controlInput = control.apply(null, results);
 
 			console.log(angle, centroidX, controlInput[0], controlInput[1]);
+
+            cntrl.turn(app.client, cntrl.getTurn() + (-controlInput[0] * 180 / Math.PI), function() {
+                cntrl.go(app.client, controlInput[1]);
+            });
 		} );
 
 
