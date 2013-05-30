@@ -4,7 +4,7 @@ var arDrone = require( 'ar-drone' );
 var io = require( 'socket.io' ).listen( 8888 );
 var http = require( "http" );
 var cntrl = require( './cntrl' );
-var fs = require('fs');
+var fs = require( 'fs' );
 
 app.kill = false;
 app.showedBatteryLevel = false;
@@ -44,9 +44,9 @@ process.on( "SIGINT", function() {
 	}
 
 	app.kill = true;
-	app.stopDrone(function(){
+	app.stopDrone( function() {
 		process.exit();
-	});
+	} );
 } );
 
 
@@ -75,7 +75,9 @@ app.createDrone = function() {
 			app.lastBattery = null;
 		}
 
-		if( ! data.demo ) { return; }
+		if( !data.demo ) {
+			return;
+		}
 
 		if( !app.showedBatteryLevel ) {
 			if( data.demo.batteryPercentage < 30 ) {
@@ -105,10 +107,14 @@ app.createDrone = function() {
 
 	stream.on( 'data', function( data ) {
 		app.lastImage = data;
-		app.socket.emit( 'picture-response' );
-		fs.writeFile('image.png', app.lastImage, function (err) {
-			if (err) throw err;
-		});
+
+		if( app.socket ) {
+			app.socket.emit( 'picture-response' );
+		}
+
+		fs.writeFile( 'image.png', app.lastImage, function( err ) {
+			if( err ) throw err;
+		} );
 	} );
 
 	app.log( "drone created" );
