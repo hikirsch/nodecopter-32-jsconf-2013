@@ -5,6 +5,8 @@ var io = require( 'socket.io' ).listen( 8888 );
 var http = require( "http" );
 var cntrl = require( './cntrl' );
 var fs = require( 'fs' );
+var detect = require( 'lib/detect' );
+var control = require( 'lib/control' );
 
 app.kill = false;
 app.showedBatteryLevel = false;
@@ -114,7 +116,14 @@ app.createDrone = function() {
 
 		fs.writeFile( 'image.png', app.lastImage, function( err ) {
 			if( err ) throw err;
+
+			var results = detect(),
+			    controlInput = control.apply(null, results);
+
+			console.log(angle, centroidX, controlInput[0], controlInput[1]);
 		} );
+
+
 	} );
 
 	app.log( "drone created" );
