@@ -5,11 +5,19 @@ var io = require( 'socket.io' ).listen( 8888 );
 var http = require( "http" );
 var drone = require( "dronestream" );
 var cntrl = require( './cntrl' );
+var fs = require('fs');
 
 app.kill = false;
-app.showedWarning = false;
+app.showedBatteryLevel = false;
 app.lastImage = null;
 app.lastBattery = null;
+
+
+app.stopDrone = function( callback ) {
+	app.client.removeAllListeners( "navdata" );
+	app.client.stop();
+	app.client.land( callback );
+};
 
 app.init = function() {
 	app.createDrone();
@@ -31,24 +39,22 @@ app.init = function() {
 	} );
 };
 
-app.stopDrone = function( callback ) {
-	app.client.removeAllListeners( "navdata" );
-	app.client.stop();
-	app.client.land( callback );
-};
-
 process.on( "SIGINT", function() {
 	if( app.kill ) {
 		process.exit();
 	}
 
 	app.kill = true;
-	app.stopDrone();
+	app.stopDrone(function(){
+		process.exit();
+	});
 } );
 
 
 app.initWebSocket = function() {
 	io.sockets.on( 'connection', function( socket ) {
+		app.newConnection = true;
+
 		app.socket = socket;
 
 		app.initSocketEvents( socket );
@@ -59,17 +65,24 @@ app.initWebSocket = function() {
 
 app.createDrone = function() {
 	app.client = arDrone.createClient( {
-		timeout: 10 * 1000
+		timeout: 1000
 	} );
 
 	app.client.config( 'video:video_channel', 3 );
 
 	app.client.on( 'navdata', function( data ) {
-		if( data.demo.batteryPercentage < 30 && !app.showedWarning ) {
-			console.log( "LOW BATTERY WARNING!" );
+		if( app.newConnection ) {
+			app.showedBatteryLevel = false;
+			app.lastBattery = null;
 		}
 
-		if( !app.showedWarning ) {
+		if( ! data.demo ) { return; }
+
+		if( !app.showedBatteryLevel ) {
+			if( data.demo.batteryPercentage < 30 ) {
+				console.log( "LOW BATTERY WARNING!" );
+			}
+
 			console.log( "BATTERY LEVEL AT: " + data.demo.batteryPercentage );
 		}
 
@@ -81,7 +94,8 @@ app.createDrone = function() {
 			app.lastBattery = data.demo.batteryPercentage;
 		}
 
-		app.showedWarning = true;
+		app.showedBatteryLevel = true;
+		app.newConnection = false;
 	} );
 
 	var stream = app.client.getPngStream();
@@ -93,6 +107,9 @@ app.createDrone = function() {
 	stream.on( 'data', function( data ) {
 		app.lastImage = data;
 		app.socket.emit( 'picture-response' );
+		fs.writeFile('image.png', app.lastImage, function (err) {
+			if (err) throw err;
+		});
 	} );
 
 	app.log( "drone created" );
