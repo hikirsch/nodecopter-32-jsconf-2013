@@ -62,7 +62,7 @@ function turn(client, degrees) {
 	if (turnCallback) {
 		client.removeListener("navdata", turnCallback);
 	}
-	if (-180 >= degrees <= 180) {
+	if (degrees >= -180 && degrees <= 180) {
 		turnCallback = function(navdata) {
 			console.log(" we are at " + navdata.demo.clockwiseDegrees + " degrees");
 			adjustTurnIfNeeded(client, degrees, navdata.demo.clockwiseDegrees);
